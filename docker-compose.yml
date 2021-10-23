@@ -1,0 +1,35 @@
+version: '3.5'
+
+services:
+  iptv-mysql:
+    container_name: iptv-mysql
+    image: mysql
+    networks:
+      - iptv_net
+    environment:
+      MYSQL_DATABASE: db_iptv_testing
+      MYSQL_USER: shehzad
+      MYSQL_PASSWORD: shehzad
+      MYSQL_ROOT_PASSWORD: shehzad
+    volumes:
+      - iptv_debug_volume:/homes/pring/app
+
+  iptv-spring-app:
+    container_name: iptv-spring-app
+    networks:
+      - iptv_net
+    depends_on: 
+      - iptv-mysql
+    volumes:
+      - iptv_debug_volume:/homes/pring/app
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - JAR_FILE=*.jar
+
+networks:
+    iptv_net:
+volumes:
+    iptv_debug_volume
