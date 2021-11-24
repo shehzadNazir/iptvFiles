@@ -1,35 +1,48 @@
 version: '3.5'
 
 services:
-  iptv-mysql:
+  iptv_mysql:
     container_name: iptv-mysql
     image: mysql
-    networks:
-      - iptv_net
+    ports:
+      - 3307:3306
     environment:
       MYSQL_DATABASE: db_iptv_testing
       MYSQL_USER: shehzad
       MYSQL_PASSWORD: shehzad
       MYSQL_ROOT_PASSWORD: shehzad
+    networks:
+      - iptv_network
     volumes:
-      - iptv_debug_volume:/homes/pring/app
+      - iptv_data:/var/lib/mysql
 
   iptv-spring-app:
     container_name: iptv-spring-app
-    networks:
-      - iptv_net
     depends_on: 
-      - iptv-mysql
-    volumes:
-      - iptv_debug_volume:/homes/pring/app
+      - iptv_mysql
+    links:
+      - iptv_mysql:iptv_mysql
     build: .
     restart: always
+    networks:
+      - iptv_network
     ports:
-      - "8080:8080"
+      - 8089:8080
     environment:
       - JAR_FILE=*.jar
+      - SPRING_DATASOURCE_URL=jdbc:mysql://iptv_mysql:3306/db_iptv_testing
+      - SPRING_DATASOURCE_USERNAME=shehzad
+      - SPRING_DATASOURCE_PASSWORD=shehzad
+    command: sh -c './wait-for iptv_mysql:3306 -- npm start'
+    volumes:
+      - iptv_data:/m3u-files
+      - iptv_data:/epg-files
+      - iptv_data:/apk-files
+      - iptv_data:/default-epg-files
+
+volumes: 
+    iptv_data:
 
 networks:
-    iptv_net:
-volumes:
-    iptv_debug_volume
+    iptv_network:
+        driver: bridge
