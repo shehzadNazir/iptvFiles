@@ -1,0 +1,46 @@
+version: '3.5'
+
+services:
+  iptv-mysql:
+    container_name: iptv-mysql
+    image: mysql
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: db_iptv_testing
+      MYSQL_USER: shehzad
+      MYSQL_PASSWORD: shehzad
+      MYSQL_ROOT_PASSWORD: shehzad
+    networks:
+      - iptv-network
+    volumes:
+      - iptv-data:/var/lib/mysql
+
+  iptv-spring-app:
+    container_name: iptv-spring-app
+    depends_on: 
+      - iptv-mysql
+    links:
+      - iptv-mysql:iptv-mysql
+    build: .
+    restart: always
+    image:iptvregistry.azurecr.io/iptv-spring-app
+    networks:
+      - iptv_network
+    ports:
+      - 8089:8080
+    environment:
+      - JAR_FILE=*.jar
+      - SPRING_DATASOURCE_URL=jdbc:mysql://iptv-mysql:3306/db_iptv_testing
+      - SPRING_DATASOURCE_USERNAME=shehzad
+      - SPRING_DATASOURCE_PASSWORD=shehzad
+    command: sh -c './wait-for iptv_mysql:3306 -- npm start'
+    volumes:
+      - iptv-data:/data
+
+volumes: 
+    iptv-data:
+
+networks:
+    iptv-network:
+        driver: bridge

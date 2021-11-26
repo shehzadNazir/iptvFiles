@@ -1,0 +1,9 @@
+az acr login --name iptvRegistery  //This is used to login to the registry to push containers.
+docker-compose up --build -d // image: myregistry.azurecr.io/azure-vote-front Add this to put the image to registry
+docker-compose down
+docker-compose push
+docker login azure
+
+docker context create aci myacicontext //to create context for docker to use it will ask you to choose your resource group
+docker use context iptvcontext
+docker compose up  //but remove the build part form your file and use the image you sent to azure registry
