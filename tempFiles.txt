@@ -24,7 +24,7 @@ services:
       - iptv-mysql:iptv-mysql
     build: .
     restart: always
-    image:iptvregistry.azurecr.io/iptv-spring-app
+    image: iptvregistry.azurecr.io/iptv-spring-app
     networks:
       - iptv-network
     ports:
@@ -34,7 +34,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://iptv-mysql:3306/db_iptv_testing
       - SPRING_DATASOURCE_USERNAME=shehzad
       - SPRING_DATASOURCE_PASSWORD=shehzad
-    command: sh -c './wait-for iptv_mysql:3306 -- npm start'
+    command: sh -c './wait-for iptv-mysql:3306 -- npm start'
     volumes:
       - iptv-data:/data
 
