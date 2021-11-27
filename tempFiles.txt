@@ -26,7 +26,7 @@ services:
     restart: always
     image:iptvregistry.azurecr.io/iptv-spring-app
     networks:
-      - iptv_network
+      - iptv-network
     ports:
       - 8089:8080
     environment:
